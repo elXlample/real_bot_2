@@ -1,4 +1,5 @@
-from aiogram.types import Router, Message
+from aiogram.types import Message
+from aiogram import Router
 
 
 basic_router = Router()
