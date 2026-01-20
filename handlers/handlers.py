@@ -13,7 +13,7 @@ async def start_comm(message: Message):
     storage = app.state.redis_client
     content = message.text
     storage.set("user_msg", content)
-    value_str = storage.get("user_msg").decode("utf-8")
+    value_str = storage.get("user_msg")
     await message.answer(text=f"Saved value:{value_str}!")
 
 
@@ -24,7 +24,7 @@ async def basic_message(message: Message):
     storage = app.state.redis_client
     content = message.text
     storage.set("user_msg", content)
-    value_str = storage.get("user_msg").decode("utf-8")
+    value_str = storage.get("user_msg")
     await message.answer(text=f"Saved value:{value_str}!")
 
 
