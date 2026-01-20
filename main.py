@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from database.database import test_connection
 from handlers.dispatcher import set_up_dispatcher
 from aiogram import Bot, Dispatcher
 import os
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
+test_connection()
 
 
 def get_redis(request: Request) -> Redis:

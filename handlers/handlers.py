@@ -1,11 +1,12 @@
-from aiogram.types import Message, BotCommand
+from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram import Router
 
 
 basic_router = Router()
 
 
-@basic_router.message(BotCommand(command="start"))
+@basic_router.message(Command(commands="start"))
 async def start_comm(message: Message):
     from main import app
 
@@ -25,3 +26,6 @@ async def basic_message(message: Message):
     storage.set("user_msg", content)
     value_str = storage.get("user_msg").decode("utf-8")
     await message.answer(text=f"Saved value:{value_str}!")
+
+
+# npx neonctl@latest init
