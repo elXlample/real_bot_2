@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
-from database.database import test_connection
+from database.database import create_pool
+from database.database import test_connection, create_table_users
 from handlers.dispatcher import set_up_dispatcher
 from aiogram import Bot, Dispatcher
 import os
@@ -16,6 +17,8 @@ async def lifespan(app: FastAPI):
     logging.basicConfig(level=os.getenv("LOG_LEVEL"), format=os.getenv("LOG_FORMAT"))
     bot = Bot(token=os.getenv("BOT_TOKEN"))
     dp = set_up_dispatcher()
+    pool = await create_pool()
+    app.state.pool = pool
     app.state.dp = dp
     app.state.bot = bot
     redis_client = Redis.from_url(os.getenv("REDIS_URL"))
@@ -30,7 +33,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
-test_connection()
+create_table_users(app=app)
 
 
 def get_redis(request: Request) -> Redis:
