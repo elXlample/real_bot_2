@@ -8,13 +8,7 @@ basic_router = Router()
 
 @basic_router.message(Command(commands="start"))
 async def start_comm(message: Message):
-    from main import app
-
-    storage = app.state.redis_client
-    content = message.text
-    storage.set("user_msg", content)
-    value_str = storage.get("user_msg")
-    await message.answer(text=f"Saved value:{value_str}!")
+    await message.answer("hello!")
 
 
 @basic_router.message()
@@ -23,8 +17,8 @@ async def basic_message(message: Message):
 
     storage = app.state.redis_client
     content = message.text
-    storage.set("user_msg", content)
-    value_str = storage.get("user_msg")
+    await storage.set("user_msg", content)
+    value_str = await storage.get("user_msg")
     await message.answer(text=f"Saved value:{value_str}!")
 
 
