@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     app.state.pool = pool
     app.state.dp = dp
     app.state.bot = bot
+    await create_table_users(app=app)
     redis_client = Redis.from_url(os.getenv("REDIS_URL"))
     app.state.redis_client = redis_client
     WEBHOOK_URL = os.getenv("WEBHOOK_URL")
@@ -38,9 +39,6 @@ app.include_router(tg_router)
 
 async def table():
     await create_table_users(app=app)
-
-
-asyncio.run(table())
 
 
 def get_redis(request: Request) -> Redis:
