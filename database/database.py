@@ -72,7 +72,7 @@ async def create_pool() -> AsyncConnectionPool:
 
 
 async def create_table_users(app: FastAPI):
-    from main import app
+    
 
     pool: AsyncConnectionPool = app.state.pool
     try:

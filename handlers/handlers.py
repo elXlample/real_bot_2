@@ -19,6 +19,8 @@ async def basic_message(message: Message):
     content = message.text
     await storage.set("user_msg", content)
     value_str = await storage.get("user_msg")
+    value_str = value_str.decode()
+
     await message.answer(text=f"Saved value:{value_str}!")
 
 

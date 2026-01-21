@@ -9,6 +9,7 @@ from redis.asyncio import Redis
 from fastapi import FastAPI, Request
 from webhook.webhook import router as tg_router
 import logging
+import asyncio
 
 
 @asynccontextmanager
@@ -33,7 +34,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
-create_table_users(app=app)
+
+
+async def table():
+    await create_table_users(app=app)
+
+
+asyncio.run(table())
 
 
 def get_redis(request: Request) -> Redis:
