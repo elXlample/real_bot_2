@@ -10,6 +10,8 @@ from fastapi import FastAPI, Request
 from webhook.webhook import router as tg_router
 import logging
 import asyncio
+from dataclasses import dataclass
+from psycopg_pool import AsyncConnectionPool
 
 
 @asynccontextmanager
@@ -35,6 +37,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
+
+
+@dataclass
+class AppResources:
+    pool: AsyncConnectionPool
+    redis: Redis
+
+
+resources = AppResources(pool=app.state.pool, redis=app.state.redis_client)
 
 
 async def table():
