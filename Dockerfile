@@ -1,1 +1,11 @@
-﻿# Р‘Р°Р·РѕРІС‹Р№ РѕР±СЂР°Р· PythonFROM python:3.11-slim# РЎРѕР·РґР°С‘Рј СЂР°Р±РѕС‡СѓСЋ РїР°РїРєСѓWORKDIR /app# РљРѕРїРёСЂСѓРµРј С„Р°Р№Р»С‹COPY requirements.txt .RUN pip install --no-cache-dir -r requirements.txtCOPY . .# РљРѕРјР°РЅРґР°, РєРѕС‚РѕСЂР°СЏ Р·Р°РїСѓСЃРєР°РµС‚ РїСЂРёР»РѕР¶РµРЅРёРµCMD ["python", "app.py"]
+﻿# Базовый образ Python
+FROM python:3.11-slim
+
+# Создаём рабочую папку
+WORKDIR /app
+
+# Копируем файлы
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
