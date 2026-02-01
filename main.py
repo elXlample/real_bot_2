@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from dependencies.deps import AppResources
 from database.database import create_pool
 from database.database import test_connection, create_table_users
 from handlers.dispatcher import set_up_dispatcher
@@ -39,13 +40,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
 
 
-@dataclass
-class AppResources:
-    pool: AsyncConnectionPool
-    redis: Redis
-
-
-resources = AppResources(pool=app.state.pool, redis=app.state.redis_client)
+app.state.resources = AppResources(pool=app.state.pool, redis=app.state.redis_client)
 
 
 async def table():

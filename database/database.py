@@ -1,4 +1,5 @@
 import os
+from dependencies.deps import AppResources
 import asyncpg
 import asyncio
 from urllib.parse import urlparse
@@ -6,7 +7,7 @@ import logging
 from psycopg_pool import AsyncConnectionPool
 from urllib.parse import quote
 from fastapi import FastAPI
-from resources import AppResources
+from dependencies.deps import get_resources
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=os.getenv("LOG_LEVEL"), format=os.getenv("LOG_FORMAT"))
@@ -98,27 +99,45 @@ async def create_table_users(app: FastAPI):
 
 async def add_user(
     resources: AppResources, user_id: int, username: str, is_alive: bool
-):
+) -> str:
     async with resources.pool.connection() as conn:
         async with conn.cursor() as cursor:
-            await cursor.execute(
-                query="""
-                    INSERT INTO users(user_id, username,is_alive)
-                    VALUES(
-                        %(user_id)s, 
-                        %(username)s,   
-                        %(is_alive)s 
+            data = (
+                await cursor.execute(
+                    query="""
+                    SELECT user_id
+                    FROM users_alembic
+                    WHERE user_id = %s
+                   
                         
                     ) ON CONFLICT DO NOTHING;
                 """,
-                params={
-                    "user_id": user_id,
-                    "username": username,
-                    "is_alive": is_alive,
-                },
+                    params=(user_id,),
+                ),
             )
-        logger.info(f"user {username} inserted into users")
 
-
-async def check_user():
-    pass
+            result = (await data.fetchone())[0]
+    if result is None:
+        async with resources.pool.connection() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(
+                    query="""
+                        INSERT INTO users_alembic(user_id, username,is_alive)
+                        VALUES(
+                            %(user_id)s, 
+                            %(username)s,   
+                            %(is_alive)s 
+                            
+                        ) ON CONFLICT DO NOTHING;
+                    """,
+                    params={
+                        "user_id": user_id,
+                        "username": username,
+                        "is_alive": is_alive,
+                    },
+                )
+        logger.info(f"user {username} inserted into users_alembic")
+        return f"user {username} added to users_alembic"
+    else:
+        logger.info(f"user {username} already in users_alembic! ")
+        return f"user {username} already in users_alembic! "

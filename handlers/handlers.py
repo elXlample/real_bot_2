@@ -2,9 +2,10 @@ from database.database import add_user, check_user
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram import Router
-from fastapi import Depends
-from resources.resources import get_resources
-from resources import AppResources
+from fastapi import Depends, Request
+from dependencies.deps import AppResources, get_resources
+from database.database import add_user
+
 
 basic_router = Router()
 
@@ -13,10 +14,13 @@ basic_router = Router()
 async def start_comm(
     message: Message, resources: AppResources = Depends(get_resources)
 ):
-    if check_user():
-        await message.answer("hello!")
-    else:
-        await add_user(resources=resources)
+    id = message.from_user.id
+    username = message.from_user.username
+    is_alive = True
+    result = await add_user(
+        resources=resources, user_id=id, username=username, is_alive=is_alive
+    )
+    await message.answer(text=result)
 
 
 @basic_router.message()
