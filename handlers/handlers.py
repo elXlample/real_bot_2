@@ -9,11 +9,11 @@ basic_router = Router()
 
 
 @basic_router.message(Command(commands="start"))
-async def start_comm(message: Message):
+async def start_comm(message: Message, resources: AppResources):
     id = message.from_user.id
     username = message.from_user.username
     is_alive = True
-    resources: AppResources = message.bot["resources"]
+
     result = await add_user(
         resources=resources, user_id=id, username=username, is_alive=is_alive
     )
@@ -21,8 +21,7 @@ async def start_comm(message: Message):
 
 
 @basic_router.message()
-async def basic_message(message: Message):
-    resources: AppResources = message.bot["resources"]
+async def basic_message(message: Message, resources: AppResources):
     storage = resources.redis
     content = message.text
     await storage.set("user_msg", content)

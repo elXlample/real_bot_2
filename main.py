@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from mids.basic import ResourcesMiddleware
 from dependencies.deps import AppResources
 from database.database import create_pool
 from handlers.dispatcher import set_up_dispatcher
@@ -28,7 +29,8 @@ async def lifespan(app: FastAPI):
         pool=pool,
         redis=redis_client,
     )
-    bot["resources"] = app.state.resources
+    dp.message.middleware(ResourcesMiddleware(app.state.resources))
+    # dp.data["resources"] = app.state.resources
     logger.info("starting")
     yield
     await bot.delete_webhook()
