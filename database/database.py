@@ -80,10 +80,7 @@ async def add_user(
                     query="""
                     SELECT user_id
                     FROM users_alembic
-                    WHERE user_id = %s
-                   
-                        
-                    ) ON CONFLICT DO NOTHING;
+                    WHERE user_id = %s;
                 """,
                     params=(user_id,),
                 ),
