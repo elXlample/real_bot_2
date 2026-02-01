@@ -1,18 +1,13 @@
 from contextlib import asynccontextmanager
 from dependencies.deps import AppResources
 from database.database import create_pool
-from database.database import test_connection, create_table_users
 from handlers.dispatcher import set_up_dispatcher
-from aiogram import Bot, Dispatcher
+from aiogram import Bot
 import os
-import redis
 from redis.asyncio import Redis
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from webhook.webhook import router as tg_router
 import logging
-import asyncio
-from dataclasses import dataclass
-from psycopg_pool import AsyncConnectionPool
 
 
 @asynccontextmanager
@@ -25,7 +20,6 @@ async def lifespan(app: FastAPI):
     app.state.pool = pool
     app.state.dp = dp
     app.state.bot = bot
-    await create_table_users(app=app)
     redis_client = Redis.from_url(os.getenv("REDIS_URL"))
     app.state.redis_client = redis_client
     WEBHOOK_URL = os.getenv("WEBHOOK_URL")
