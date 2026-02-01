@@ -40,7 +40,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
 
 
-app.state.resources = AppResources(pool=app.state.pool, redis=app.state.redis_client)
+app.state.resources = AppResources(pool=app.state.pool, redis=app.state.redis_client, )
 
 
 async def table():

@@ -1,10 +1,9 @@
-from database.database import add_user, check_user
+from database.database import add_user
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram import Router
-from fastapi import Depends, Request
+from fastapi import Depends
 from dependencies.deps import AppResources, get_resources
-from database.database import add_user
 
 
 basic_router = Router()
@@ -24,10 +23,12 @@ async def start_comm(
 
 
 @basic_router.message()
-async def basic_message(message: Message):
+async def basic_message(
+    message: Message, resources: AppResources = Depends(get_resources)
+):
     from main import app
 
-    storage = app.state.redis_client
+    storage = resources.redis
     content = message.text
     await storage.set("user_msg", content)
     value_str = await storage.get("user_msg")

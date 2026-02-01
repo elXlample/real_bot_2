@@ -8,6 +8,7 @@ from redis.asyncio import Redis
 class AppResources:
     pool: AsyncConnectionPool
     redis: Redis
+    
 
 
 def get_resources(request: Request) -> AppResources:
