@@ -1,13 +1,10 @@
 import os
 from dependencies.deps import AppResources
 import asyncpg
-import asyncio
 from urllib.parse import urlparse
 import logging
 from psycopg_pool import AsyncConnectionPool
 from urllib.parse import quote
-from fastapi import FastAPI
-from dependencies.deps import get_resources
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=os.getenv("LOG_LEVEL"), format=os.getenv("LOG_FORMAT"))
@@ -71,30 +68,6 @@ async def create_pool() -> AsyncConnectionPool:
         max_size=10,
     )
     return pool
-
-
-async def create_table_users(app: FastAPI):
-    pool: AsyncConnectionPool = app.state.pool
-    try:
-        async with pool.connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(
-                    query="""
-                            CREATE TABLE IF NOT EXISTS users(
-                                id SERIAL PRIMARY KEY,
-                                user_id BIGINT NOT NULL UNIQUE,
-                                username VARCHAR(50),
-                                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                                language VARCHAR(10) NOT NULL,
-                                role VARCHAR(30) NOT NULL,
-                                is_alive BOOLEAN NOT NULL 
-                            ); 
-                        """
-                )
-                logger.info("DB users CREATED")
-    finally:
-        if conn:
-            logger.debug("Connection returned to pool")
 
 
 async def add_user(

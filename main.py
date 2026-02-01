@@ -30,6 +30,10 @@ async def lifespan(app: FastAPI):
     app.state.redis_client = redis_client
     WEBHOOK_URL = os.getenv("WEBHOOK_URL")
     await bot.set_webhook(WEBHOOK_URL)
+    app.state.resources = AppResources(
+        pool=app.state.pool,
+        redis=app.state.redis_client,
+    )
     logger.info("starting")
     yield
     await bot.delete_webhook()
@@ -38,14 +42,3 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(tg_router)
-
-
-app.state.resources = AppResources(pool=app.state.pool, redis=app.state.redis_client, )
-
-
-async def table():
-    await create_table_users(app=app)
-
-
-def get_redis(request: Request) -> Redis:
-    return request.app.state.redis_client
