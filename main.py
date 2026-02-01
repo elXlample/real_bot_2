@@ -25,9 +25,10 @@ async def lifespan(app: FastAPI):
     WEBHOOK_URL = os.getenv("WEBHOOK_URL")
     await bot.set_webhook(WEBHOOK_URL)
     app.state.resources = AppResources(
-        pool=app.state.pool,
-        redis=app.state.redis_client,
+        pool=pool,
+        redis=redis_client,
     )
+    bot["resources"] = app.state.resources
     logger.info("starting")
     yield
     await bot.delete_webhook()

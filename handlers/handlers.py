@@ -2,20 +2,18 @@ from database.database import add_user
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram import Router
-from fastapi import Depends
-from dependencies.deps import AppResources, get_resources
+from dependencies.deps import AppResources
 
 
 basic_router = Router()
 
 
 @basic_router.message(Command(commands="start"))
-async def start_comm(
-    message: Message, resources: AppResources = Depends(get_resources)
-):
+async def start_comm(message: Message):
     id = message.from_user.id
     username = message.from_user.username
     is_alive = True
+    resources: AppResources = message.bot["resources"]
     result = await add_user(
         resources=resources, user_id=id, username=username, is_alive=is_alive
     )
@@ -23,11 +21,8 @@ async def start_comm(
 
 
 @basic_router.message()
-async def basic_message(
-    message: Message, resources: AppResources = Depends(get_resources)
-):
-    from main import app
-
+async def basic_message(message: Message):
+    resources: AppResources = message.bot["resources"]
     storage = resources.redis
     content = message.text
     await storage.set("user_msg", content)
@@ -35,6 +30,3 @@ async def basic_message(
     value_str = value_str.decode()
 
     await message.answer(text=f"Saved value:{value_str}!")
-
-
-# npx neonctl@latest init
