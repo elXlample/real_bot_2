@@ -73,18 +73,16 @@ async def create_pool() -> AsyncConnectionPool:
 async def add_user(resources: AppResources, user_id: int, username: str) -> str:
     async with resources.pool.connection() as conn:
         async with conn.cursor() as cursor:
-            data = (
-                await cursor.execute(
-                    query="""
+            await cursor.execute(
+                query="""
                     SELECT tg_id
                     FROM users_alembic
                     WHERE tg_id = %s;
                 """,
-                    params=(user_id,),
-                ),
+                params=(user_id,),
             )
 
-            result = (await data.fetchone())[0]
+        result = await cursor.fetchall()
     if result is None:
         async with resources.pool.connection() as conn:
             async with conn.cursor() as cursor:
