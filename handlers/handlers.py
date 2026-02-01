@@ -12,11 +12,8 @@ basic_router = Router()
 async def start_comm(message: Message, resources: AppResources):
     id = message.from_user.id
     username = message.from_user.username
-    is_alive = True
 
-    result = await add_user(
-        resources=resources, user_id=id, username=username, is_alive=is_alive
-    )
+    result = await add_user(resources=resources, user_id=id, username=username)
     await message.answer(text=result)
 
 

@@ -70,17 +70,15 @@ async def create_pool() -> AsyncConnectionPool:
     return pool
 
 
-async def add_user(
-    resources: AppResources, user_id: int, username: str, is_alive: bool
-) -> str:
+async def add_user(resources: AppResources, user_id: int, username: str) -> str:
     async with resources.pool.connection() as conn:
         async with conn.cursor() as cursor:
             data = (
                 await cursor.execute(
                     query="""
-                    SELECT user_id
+                    SELECT tg_id
                     FROM users_alembic
-                    WHERE user_id = %s;
+                    WHERE tg_id = %s;
                 """,
                     params=(user_id,),
                 ),
@@ -92,18 +90,17 @@ async def add_user(
             async with conn.cursor() as cursor:
                 await cursor.execute(
                     query="""
-                        INSERT INTO users_alembic(user_id, username,is_alive)
+                        INSERT INTO users_alembic(tg_id, username)
                         VALUES(
-                            %(user_id)s, 
-                            %(username)s,   
-                            %(is_alive)s 
+                            %(tg_id)s, 
+                            %(username)s   
+                             
                             
                         ) ON CONFLICT DO NOTHING;
                     """,
                     params={
-                        "user_id": user_id,
+                        "tg_id": user_id,
                         "username": username,
-                        "is_alive": is_alive,
                     },
                 )
         logger.info(f"user {username} inserted into users_alembic")
