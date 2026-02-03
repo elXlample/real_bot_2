@@ -81,8 +81,8 @@ async def add_user(resources: AppResources, user_id: int, username: str) -> str:
                 """,
                 params=(user_id,),
             )
-
         result = await cursor.fetchall()
+
     if result is None:
         async with resources.pool.connection() as conn:
             async with conn.cursor() as cursor:
